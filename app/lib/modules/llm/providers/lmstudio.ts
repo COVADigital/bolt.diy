@@ -14,6 +14,7 @@ export default class LMStudioProvider extends BaseProvider {
     baseUrlKey: 'LMSTUDIO_API_BASE_URL',
   };
 
+  // No static models are defined as this provider uses dynamic model loading
   staticModels: ModelInfo[] = [];
 
   async getDynamicModels(
@@ -35,6 +36,10 @@ export default class LMStudioProvider extends BaseProvider {
       }
 
       const response = await fetch(`${baseUrl}/v1/models`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch models. Status: ${response.status}`);
+      }
+
       const data = (await response.json()) as { data: Array<{ id: string }> };
 
       return data.data.map((model) => ({
@@ -44,14 +49,14 @@ export default class LMStudioProvider extends BaseProvider {
         maxTokenAllowed: 8000,
       }));
     } catch (error: any) {
-      console.log('Error getting LMStudio models:', error.message);
-
+      console.error('Error getting LMStudio models:', error.message);
       return [];
     }
   }
+
   getModelInstance: (options: {
     model: string;
-    serverEnv: Env;
+    serverEnv: Record<string, string>;
     apiKeys?: Record<string, string>;
     providerSettings?: Record<string, IProviderSetting>;
   }) => LanguageModelV1 = (options) => {
@@ -59,10 +64,11 @@ export default class LMStudioProvider extends BaseProvider {
     const { baseUrl } = this.getProviderBaseUrlAndKey({
       apiKeys,
       providerSettings,
-      serverEnv: serverEnv as any,
-      defaultBaseUrlKey: 'OLLAMA_API_BASE_URL',
+      serverEnv,
+      defaultBaseUrlKey: 'LMSTUDIO_API_BASE_URL',
       defaultApiTokenKey: '',
     });
+
     const lmstudio = createOpenAI({
       baseUrl: `${baseUrl}/v1`,
       apiKey: '',
