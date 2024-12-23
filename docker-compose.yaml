@@ -27,9 +27,18 @@ services:
       - RUNNING_IN_DOCKER=true
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - type: bind
+        source: ./.env
+        target: /app/.env
     command: pnpm run dockerstart
     profiles:
       - production
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5173']
+      interval: 45s
+      timeout: 15s
+      retries: 5
 
   app-dev:
     image: bolt-ai:development
@@ -58,6 +67,9 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
+     - type: bind
+        source: ./.env
+        target: /app/.env
       - type: bind
         source: .
         target: /app
@@ -67,3 +79,8 @@ services:
       - "5173:5173"
     command: pnpm run dev --host 0.0.0.0
     profiles: ["development", "default"]
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5173']
+      interval: 45s
+      timeout: 15s
+      retries: 5
