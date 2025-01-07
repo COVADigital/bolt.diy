@@ -7,7 +7,7 @@ services:
       target: bolt-ai-production
     ports:
       - "5173:5173"
-    env_file: ".env.local"
+    env_file: ".env"
     environment:
       - NODE_ENV=production
       - COMPOSE_PROFILES=production
