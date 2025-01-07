@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: bolt-ai-production
+      args:
+        ENV: production # Explicitly pass the build environme
     ports:
       - "5173:5173"
     env_file: ".env"
@@ -94,3 +96,7 @@ services:
       interval: 45s
       timeout: 15s
       retries: 5
+
+networks:
+  default:
+    name: boltnew-coolify_default
