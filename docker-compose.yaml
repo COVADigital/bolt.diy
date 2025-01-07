@@ -30,6 +30,13 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     command: pnpm run dockerstart
+    volumes:
+      - type: bind
+        source: ./.env.local
+        target: /app/.env.local
+      - type: bind
+        source: ./.env
+        target: /app/.env
     profiles:
       - production
 
