@@ -97,3 +97,4 @@ services:
 volumes:
   node_modules:
     driver: local
+    external: true
