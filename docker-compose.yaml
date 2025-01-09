@@ -30,10 +30,11 @@ services:
     profiles:
       - production
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:5173']
-      interval: 45s
-      timeout: 15s
-      retries: 5
+      test: curl --silent --fail http://localhost:5173 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
   # Development environment configuration
   app-dev:
@@ -83,10 +84,11 @@ services:
     command: pnpm run dev --host 0.0.0.0
     profiles: ['development', 'default']
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:5173']
-      interval: 45s
-      timeout: 15s
-      retries: 5
+      test: curl --silent --fail http://localhost:5173 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
 # Named Volumes
 volumes:
