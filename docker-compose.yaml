@@ -25,7 +25,11 @@ services:
       - type: bind
         source: ./.env
         target: /app/.env
-      - node_modules:/app/node_modules
+      - type: bind
+        source: .
+        target: /app
+        consistency: cached
+      - /app/node_modules
     command: pnpm run dockerstart
     profiles:
       - production
@@ -80,7 +84,7 @@ services:
         source: .
         target: /app
         consistency: cached
-      - node_modules:/app/node_modules
+      - /app/node_modules
     command: pnpm run dev --host 0.0.0.0
     profiles: ['development', 'default']
     healthcheck:
@@ -89,8 +93,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
-
-# Named Volumes
-volumes:
-  node_modules:
-    driver: local
