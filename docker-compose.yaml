@@ -39,7 +39,7 @@ services:
         source: .  # Ensure package.json is in this directory
         target: /app
         consistency: cached
-      - /app/node_modules
+      - node_modules:/app/node_modules
     command: pnpm run dev --host 0.0.0.0
     profiles: ['development', 'default']
     healthcheck:
