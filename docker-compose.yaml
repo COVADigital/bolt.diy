@@ -20,16 +20,15 @@ services:
       - 'host.docker.internal:host-gateway'
     volumes:
       - type: bind
+        source: ./  # Bind the root directory to /app
+        target: /app
+      - type: bind
         source: ./.env.local
         target: /app/.env.local
       - type: bind
         source: ./.env
         target: /app/.env
-      - type: bind
-        source: .
-        target: /app
-        consistency: cached
-      - /app/node_modules
+      - node_modules:/app/node_modules
     command: pnpm run dockerstart
     profiles:
       - production
@@ -75,16 +74,16 @@ services:
       - 'host.docker.internal:host-gateway'
     volumes:
       - type: bind
+        source: ./  # Bind the root directory to /app
+        target: /app
+        consistency: cached
+      - type: bind
         source: ./.env.local
         target: /app/.env.local
       - type: bind
         source: ./.env
         target: /app/.env
-      - type: bind
-        source: .
-        target: /app
-        consistency: cached
-      - /app/node_modules
+      - node_modules:/app/node_modules
     command: pnpm run dev --host 0.0.0.0
     profiles: ['development', 'default']
     healthcheck:
@@ -93,3 +92,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 5s
+
+# Named Volumes
+volumes:
+  node_modules:
+    driver: local
