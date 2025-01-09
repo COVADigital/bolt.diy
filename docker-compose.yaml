@@ -9,7 +9,7 @@ services:
       args:
         ENV: development
     ports:
-      - '5174:5173'
+      - '5174:5174'
     environment:
       - NODE_ENV=development
       - VITE_HMR_PROTOCOL=ws
