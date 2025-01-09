@@ -74,9 +74,12 @@ services:
       - 'host.docker.internal:host-gateway'
     volumes:
       - type: bind
-        source: ./  # Bind the root directory to /app
+        source: ./  # Ensure package.json is in this directory
         target: /app
         consistency: cached
+      - type: bind
+        source: ./package.json  # Explicitly bind package.json
+        target: /app/package.json
       - type: bind
         source: ./.env.local
         target: /app/.env.local
