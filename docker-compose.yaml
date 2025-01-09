@@ -1,19 +1,44 @@
 services:
-  # Production environment configuration
-  app-dev:
-    image: bolt-ai:development
+  app-prod:
+    image: bolt-ai:production
     build:
       context: .
       dockerfile: Dockerfile
-      target: bolt-ai-development
-      args:
-        ENV: development
+      target: bolt-ai-production
     ports:
-      - '5173:5173'
-    env_file: '.env' # Using .env for environment variables.
+      - "5173:5173"
+    env_file: ".env.local"
+    environment:
+      - NODE_ENV=production
+      - COMPOSE_PROFILES=production
+      # No strictly needed but serving as hints for Coolify
+      - PORT=5173
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - HuggingFace_API_KEY=${HuggingFace_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPEN_ROUTER_API_KEY=${OPEN_ROUTER_API_KEY}
+      - GOOGLE_GENERATIVE_AI_API_KEY=${GOOGLE_GENERATIVE_AI_API_KEY}
+      - OLLAMA_API_BASE_URL=${OLLAMA_API_BASE_URL}
+      - XAI_API_KEY=${XAI_API_KEY}
+      - TOGETHER_API_KEY=${TOGETHER_API_KEY}
+      - TOGETHER_API_BASE_URL=${TOGETHER_API_BASE_URL}
+      - AWS_BEDROCK_CONFIG=${AWS_BEDROCK_CONFIG}
+      - VITE_LOG_LEVEL=${VITE_LOG_LEVEL:-debug}
+      - DEFAULT_NUM_CTX=${DEFAULT_NUM_CTX:-32768}
+      - RUNNING_IN_DOCKER=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: pnpm run dockerstart
+    profiles:
+      - production
+
+  app-dev:
+    image: bolt-ai:development
+    build:
+      target: bolt-ai-development
     environment:
       - NODE_ENV=development
-      - COMPOSE_PROFILES=development
       - VITE_HMR_PROTOCOL=ws
       - VITE_HMR_HOST=localhost
       - VITE_HMR_PORT=5173
@@ -25,31 +50,24 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - OPEN_ROUTER_API_KEY=${OPEN_ROUTER_API_KEY}
+      - XAI_API_KEY=${XAI_API_KEY}
       - GOOGLE_GENERATIVE_AI_API_KEY=${GOOGLE_GENERATIVE_AI_API_KEY}
       - OLLAMA_API_BASE_URL=${OLLAMA_API_BASE_URL}
       - TOGETHER_API_KEY=${TOGETHER_API_KEY}
       - TOGETHER_API_BASE_URL=${TOGETHER_API_BASE_URL}
+      - AWS_BEDROCK_CONFIG=${AWS_BEDROCK_CONFIG}
       - VITE_LOG_LEVEL=${VITE_LOG_LEVEL:-debug}
       - DEFAULT_NUM_CTX=${DEFAULT_NUM_CTX:-32768}
       - RUNNING_IN_DOCKER=true
     extra_hosts:
-      - 'host.docker.internal:host-gateway'
+      - "host.docker.internal:host-gateway"
     volumes:
       - type: bind
-        source: .  # Ensure package.json is in this directory
+        source: .
         target: /app
         consistency: cached
-      - node_modules:/app/node_modules
+      - /app/node_modules
+    ports:
+      - "5173:5173"
     command: pnpm run dev --host 0.0.0.0
-    profiles: ['development', 'default']
-    healthcheck:
-      test: curl --silent --fail http://localhost:5173 || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-
-# Named Volumes
-volumes:
-  node_modules:
-    driver: local
+    profiles: ["development", "default"]
