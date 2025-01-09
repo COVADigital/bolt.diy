@@ -50,7 +50,7 @@ services:
     command: pnpm run dev --host 0.0.0.0
     profiles: ['development', 'default']
     healthcheck:
-      test: curl --silent --fail http://localhost:5173 || exit 1
+      test: curl --silent --fail http://localhost:5174 || exit 1
       interval: 30s
       timeout: 10s
       retries: 3
